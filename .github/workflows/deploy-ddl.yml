@@ -1,0 +1,57 @@
+name: Deploy BigQuery Iceberg Tables
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'ddl/**/*.sql'
+  workflow_dispatch:
+
+env:
+  GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  BQ_DATASET: ${{ secrets.BQ_DATASET }}
+
+jobs:
+  deploy-tables:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Deploy DDL files
+        run: |
+          for sql_file in ddl/*.sql; do
+            echo "Executing $sql_file..."
+            bq query \
+              --project_id=$GCP_PROJECT_ID \
+              --use_legacy_sql=false \
+              --max_rows=0 \
+              < "$sql_file"
+
+            if [ $? -eq 0 ]; then
+              echo "✓ Successfully executed $sql_file"
+            else
+              echo "✗ Failed to execute $sql_file"
+              exit 1
+            fi
+          done
+
+      - name: Verify tables
+        run: |
+          bq ls --project_id=$GCP_PROJECT_ID $BQ_DATASET
+
