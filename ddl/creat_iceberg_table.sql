@@ -22,3 +22,5 @@ PARTITION BY order_date
 OPTIONS(
   table_format = 'ICEBERG'
 );
+
+--foo
