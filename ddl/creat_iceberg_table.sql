@@ -23,3 +23,4 @@ OPTIONS(
   table_format = 'ICEBERG'
 );
 
+--foo
