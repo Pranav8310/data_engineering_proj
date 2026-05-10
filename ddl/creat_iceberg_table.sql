@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXIST `stellar-operand-384014.atomic_orders.orders (
+CREATE TABLE IF NOT EXISTS `stellar-operand-384014.atomic_orders.orders (
     row_id INTEGER PRIMARY KEY,
     order_id VARCHAR(50) NOT NULL,
     order_date DATE,
