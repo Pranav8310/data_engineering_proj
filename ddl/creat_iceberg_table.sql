@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS `stellar-operand-384014.atomic_orders.orders`
 (
-    row_id INTEGER PRIMARY KEY,
+    row_id INT64,
     order_id STRING NOT NULL,
     order_date DATE,
     ship_date DATE,
@@ -17,11 +17,10 @@ CREATE TABLE IF NOT EXISTS `stellar-operand-384014.atomic_orders.orders`
     category STRING,
     sub_category STRING,
     product_name STRING,
-    sales DECIMAL(10, 2)
+    sales NUMERIC,
+    PRIMARY KEY (row_id) NOT ENFORCED
 )
 PARTITION BY order_date
 OPTIONS(
-  table_format = 'ICEBERG'
+    table_format = 'ICEBERG'
 );
-
---fooo
